@@ -1,0 +1,15 @@
+{
+  "name": "arcade_project",
+  "version": "1",
+  "description": "asdf",
+  "main": "server.js",
+  "repository": "pass",
+  "author": "me",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "express": "^4.18.2",
+    "liquidjs": "^10.9.2",
+    "socket.io": "^4.7.2"
+  }
+}
