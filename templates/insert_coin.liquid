@@ -8,15 +8,17 @@
             <h1 class="mt-5">{{machine_name}}</h1>
             <p>cost: 1 token</p>
             <p>Remaining: 20 tokens</p>
-            <button class="btn btn-primary col-12" onclick="coin()">insert coin</button>
+            <button class="btn btn-primary col-12" id="mainbutton">insert coin</button>
         </div>
     </body>
 
-    <script>
-        function coin(){
-            game_id = {{game_id}}
-            $.get("/coin", {"game" : {{game_id}} })
-        }
-    </script>
 </html>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+    function coin(){
+        game_id = {{game_id}}
+        $.get("/coin", {"game" : {{game_id}} })
+    }
+
+    $("#mainbutton").on("click", coin());
+</script>
