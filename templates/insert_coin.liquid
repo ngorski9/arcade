@@ -15,10 +15,14 @@
 </html>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script>
+
     function coin(){
-        game_id = {{game_id}}
-        $.get("/coin", {"game" : {{game_id}} })
+        game_id = {{game_id}};
+        $("h1").css("color", "blue");
+        setTimeout(function(){ $("h1").css("color", "green") }, 1000);
+        $.get("/coin", {"game" : {{game_id}} });
     }
 
-    $("#mainbutton").on("click", coin());
+
+    $("#mainbutton").on("click", coin);
 </script>
