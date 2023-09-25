@@ -19,10 +19,18 @@ app.get('/', (req, res) => {
   userdata.sort((a,b) => {
     let name1 = a.name.toUpperCase()
     let name2 = b.name.toUpperCase()
+    let tickets1 = a.tickets
+    let tickets2 = b.tickets
+    if(tickets1 < tickets2){
+      return -1
+    }
+    if(tickets1 > tickets2){
+      return 1
+    }
     if(name1 < name2){
       return -1
     }
-    if(name2 > name1){
+    if(name1 > name2){
       return 1
     }
     return 0
