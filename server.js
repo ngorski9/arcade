@@ -22,10 +22,10 @@ app.get('/', (req, res) => {
     let tickets1 = a.tickets
     let tickets2 = b.tickets
     if(tickets1 < tickets2){
-      return -1
+      return 1
     }
     if(tickets1 > tickets2){
-      return 1
+      return -1
     }
     if(name1 < name2){
       return -1
