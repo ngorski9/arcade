@@ -1,48 +1,84 @@
-const express = require('express');
-const app = express();
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+const express = require('express')
+const app = express()
+const port = 80
 
-var { Liquid } = require('liquidjs');
-var engine = new Liquid({
-    root: './templates/'
-});
-app.engine('liquid', engine.express()); 
-app.set('view engine', 'liquid');
-app.set('views', './templates/')
+users = {}
 
-connections = {};
-
-game_names = {
-  0 : "Chuck E Cheese Memory Game"
+function get_user(id){
+  if (!(id in users)){
+    users[id] = {"id" : id, "tokens" : 0, "tickets" : 0}    
+  }
+  return users[id]
 }
 
 app.get('/', (req, res) => {
-  res.send("hello gamers");
-});
+  if(Object.keys(users).length == 0){
+    res.send("there are no users")
+  }
+  else{
+    res.send( users )
+  }
+})
 
-app.get('/coin', (req, res) => {
-  game = req.query.game_id;
-  res.send("success")
-  io.to(connections[game_id]).emit('start');
-});
+app.get("/addTokens", (req, res) => {
+  let id = req.query.id
+  let amount = req.query.amount
+  if (id === "" || amount === "" || isNaN(amount)){
+    res.send("0");
+  }
+  else{
+    user = get_user(id) 
+    user["tokens"] += parseInt(amount)
+    res.send("1")
+  }
+})
 
-app.get('/machine', (req, res) => {
-    game_id = req.query.game_id;
-    res.render("insert_coin.liquid", {"game_id" : game_id, "machine_name" : game_names[game_id]})
-});
+app.get('/charge', (req, res) => {
+    id = req.query.id;
+    amount = req.query.amount;
+    if ( !( id in users ) || amount === "" || isNaN(amount)){
+        res.send("0");
+    }
+    else{
+      amount = parseInt(amount)
+      if(amount > (users[id])["tokens"]){
+          res.send("0")
+      }
+      else{
+          (users[id])["tokens"] -= amount
+          res.send("1")
+      }
+    }
+})
 
-io.on('connection', (socket) => {
-  socket.on('identify', function(game_id){
-    console.log(socket.id.toString() + " identified with " + game_id);
-    connections[game_id] = socket.id;
-  });
-  console.log('a user connected');
-  io.emit('query_name', null);
-});
+app.get('/addTickets', (req, res) => {
+  let id = req.query.id
+  let amount = req.query.amount
+  if (id === "" || amount === "" || isNaN(amount)){
+    res.send("0");
+  }
+  else{
+    user = get_user(id) 
+    user["tickets"] += parseInt(amount)
+    res.send("1")
+  }
+})
 
-server.listen(3000, () => {
-  console.log('listening on *:3000');
-});
+app.get('/removeUser', (req, res) => {
+  let id = req.query.id
+  if(id in users){
+    delete users[id]
+    res.send("1")
+  }
+  else{
+    res.send("0")
+  }
+})
+
+app.get("/ping", (req, res) => {
+  res.send("ping")
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
