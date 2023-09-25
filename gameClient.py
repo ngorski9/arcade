@@ -12,13 +12,14 @@ waiting_rest_of_input = False
 accepting_input = True
 
 game_id = 0
+
 game_names = {0 : "ChuckECheese's Match Game [cecmatch] - MAME 0.258 (LLP64)"}
 game_costs = {0: 1}
 
-handle = wgui.FindWindow(None, game_names[game_id])
-remote_thread, _ = wproc.GetWindowThreadProcessId(handle)
-wproc.AttachThreadInput(wapi.GetCurrentThreadId(), remote_thread, True)
-wgui.SetFocus(handle)
+# handle = wgui.FindWindow(None, game_names[game_id])
+# remote_thread, _ = wproc.GetWindowThreadProcessId(handle)
+# wproc.AttachThreadInput(wapi.GetCurrentThreadId(), remote_thread, True)
+# wgui.SetFocus(handle)
 
 def confirm():
     global accepting_input
@@ -26,13 +27,13 @@ def confirm():
     global waiting_rest_of_input
     accepting_input = False
     print("found account number" + person_id)
-    v = requests.get("http://localhost:3000/charge", params={"id" : person_id, "cost" : game_costs[game_id]})
-    print("found: " + v.text)
-    if bool(int(v.text)):
-        pydirectinput.keyDown("c")
-        pydirectinput.keyUp("c")
-    else:
-        print("denied for whateer reason")
+    # v = requests.get("https://arcade-52bs.onrender.com/charge", params={"id" : person_id, "amount" : game_costs[game_id]})
+    # print("found: " + v.text)
+    # if bool(int(v.text)):
+    #     pydirectinput.keyDown("c")
+    #     pydirectinput.keyUp("c")
+    # else:
+    #     print("denied for whateer reason")
     person_id=""
     waiting_rest_of_input = False
     accepting_input = True

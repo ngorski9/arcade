@@ -2,33 +2,42 @@ const express = require('express')
 const app = express()
 const port = 80
 
+var { Liquid } = require('liquidjs');
+var engine = new Liquid();
+
+// register liquid engine
+app.engine('liquid', engine.express()); 
+app.set('views', './templates');
+app.set('view engine', 'liquid');
+
+
 users = {}
 
-function get_user(id){
-  if (!(id in users)){
-    users[id] = {"id" : id, "tokens" : 0, "tickets" : 0}    
-  }
-  return users[id]
-}
 
 app.get('/', (req, res) => {
-  if(Object.keys(users).length == 0){
-    res.send("there are no users")
-  }
-  else{
-    res.send( users )
-  }
+  userdata = Object.values(users)
+  userdata.sort((a,b) => {
+    let name1 = a.name.toUpperCase()
+    let name2 = b.name.toUpperCase()
+    if(name1 < name2){
+      return -1
+    }
+    if(name2 > name1){
+      return 1
+    }
+    return 0
+  })
+  res.render("leaderboard", {"users" : userdata})
 })
 
 app.get("/addTokens", (req, res) => {
   let id = req.query.id
   let amount = req.query.amount
-  if (id === "" || amount === "" || isNaN(amount)){
+  if ( !(id in users) || amount === "" || isNaN(amount)){
     res.send("0");
   }
   else{
-    user = get_user(id) 
-    user["tokens"] += parseInt(amount)
+    (users[id])["tokens"] += parseInt(amount)
     res.send("1")
   }
 })
@@ -54,12 +63,24 @@ app.get('/charge', (req, res) => {
 app.get('/addTickets', (req, res) => {
   let id = req.query.id
   let amount = req.query.amount
-  if (id === "" || amount === "" || isNaN(amount)){
+  if ( !( id in users ) || amount === "" || isNaN(amount)){
     res.send("0");
   }
+  else{ 
+    (users[id])["tickets"] += parseInt(amount)
+    res.send("1")
+  }
+})
+
+app.get('/addUser', (req, res) => {
+  let id = req.query.id
+  let amount = req.query.amount
+  let name = req.query.name
+  if ( ( id in users ) || id === "" || amount === "" || isNaN(amount) || name === ""){
+    res.send("0")
+  }
   else{
-    user = get_user(id) 
-    user["tickets"] += parseInt(amount)
+    users[id] = {"name" : name, "tokens" : parseInt(amount), "tickets" : 0 }
     res.send("1")
   }
 })
@@ -73,10 +94,6 @@ app.get('/removeUser', (req, res) => {
   else{
     res.send("0")
   }
-})
-
-app.get("/ping", (req, res) => {
-  res.send("ping")
 })
 
 app.listen(port, () => {
